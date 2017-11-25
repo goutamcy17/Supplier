@@ -12,7 +12,7 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 @Component
 public class SupplierEventListener {
 
-    private final RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
     private SupplierRepository repository;
     
 
@@ -29,15 +29,9 @@ public class SupplierEventListener {
         broadcastUpdates(event.getId());
     }
     
-    @Bean
-    public MessageConverter jsonMessageConverter(){
-        return new Jackson2JsonMessageConverter();
-    }
-
-     private void broadcastUpdates(String id) {
+   private void broadcastUpdates(String id) {
         SupplierEntry  spplierEntry = repository.findOneBySupplierId(id);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
-        rabbitTemplate.convertAndSend("supplier-queue", spplierEntry); 
+        rabbitTemplate.convertAndSend("supplier-queue", spplierEntry.getSupplierId()); 
     }
 
 }

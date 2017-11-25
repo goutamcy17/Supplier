@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import org.supplierframework.supplier.suppliercommand.command.SubmitSupplierCommand;
 import javax.servlet.http.HttpServletResponse;
 
+import org.supplierframework.supplier.suppliercommand.eventstore.PatsyCodes;
 import org.supplierframework.supplier.suppliercommand.eventstore.SupplierEntry;
 import org.supplierframework.supplier.suppliercommand.eventstore.SupplierRepository;
+import org.supplierframework.supplier.suppliercommand.web.dto.SupplierDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -63,7 +65,10 @@ public class SupplierController {
 	   return supplierRepository.findAll();	  
 	}
 	@RequestMapping(value = "/supplierdetails", method = RequestMethod.GET)
-    public @ResponseBody SupplierEntry supplierDetail(@RequestParam(value = "supplierId", required = true) String supplierId,HttpServletResponse response) {
-       return supplierRepository.findOneBySupplierId(supplierId);   
+    public @ResponseBody SupplierDto supplierDetail(@RequestParam(value = "supplierId", required = true) String supplierId,HttpServletResponse response) {
+	    SupplierEntry supplierentry = supplierRepository.findOneBySupplierId(supplierId);
+	    PatsyCodes patsyCodes = new PatsyCodes();	  
+	    SupplierDto supplierDto = new SupplierDto(supplierentry.getId(),supplierentry.getSupplierId(),supplierentry.getOriginalName(),supplierentry.getEnglishName(),supplierentry.getAddress(),supplierentry.getStreet(),supplierentry.getCity(),supplierentry.getPostalCode(),supplierentry.getCountryCode(),supplierentry.getCountryName(),patsyCodes.getCompanyCode(),patsyCodes.getPaymentTerms(),patsyCodes.getSegment(),patsyCodes.getCommodity(),patsyCodes.getHostname());
+	    return supplierDto;   
     }
 }

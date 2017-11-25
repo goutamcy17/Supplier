@@ -1,11 +1,10 @@
 package org.supplierframework.supplier.suppliercommand.rabbitmq;
 
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import org.springframework.stereotype.Component;
-import org.supplierframework.supplier.suppliercommand.eventstore.SupplierEntry;
 import org.supplierframework.supplier.suppliercommand.eventstore.SupplierRepository;
 import org.supplierframework.supplier.suppliercommand.web.SupplierController;
-import org.springframework.amqp.core.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -20,6 +19,10 @@ public class Receiver {
     
     public void receiveMessage(final String message) {
         System.out.println("Received <" + message.toString() + ">");
+        Random rand = new Random();
+        int num = rand.nextInt(9000000) + 1000000;
+        int value = supplierRepository.setParmaId(String.valueOf(num),message);
+        LOG.info("Update figure: " + value); 
         latch.countDown();
     }
 
@@ -27,11 +30,11 @@ public class Receiver {
         return latch;
     }
     
-    @RabbitListener(queues = "supplier-queue", containerFactory="jsoFactory")
-    public void processSupplierMessage(final Message  message) {
+    @RabbitListener(queues = "supplier-queue")
+    public void processSupplierMessage(final String  message) {
         LOG.info("Message is of type: " + message.getClass().getName());
-        LOG.info("Received on myqueue: " + message.toString()); 
-        int value = supplierRepository.setParmaId("1111","f132d634-2206-40f0-80fe-dab890abe6e9");
+        LOG.info("Received on myqueue: " + message); 
+        int value = supplierRepository.setParmaId("1111",message);
         LOG.info("Update figure: " + value); 
         latch.countDown();
     }
