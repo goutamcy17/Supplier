@@ -33,8 +33,10 @@ public class Receiver {
     @RabbitListener(queues = "supplier-queue")
     public void processSupplierMessage(final String  message) {
         LOG.info("Message is of type: " + message.getClass().getName());
-        LOG.info("Received on myqueue: " + message); 
-        int value = supplierRepository.setParmaId("1111",message);
+        LOG.info("Received on myqueue: " + message);
+        Random rand = new Random();
+        int num = rand.nextInt(9000000) + 1000000;
+        int value = supplierRepository.setParmaId(String.valueOf(num),message);
         LOG.info("Update figure: " + value); 
         latch.countDown();
     }
